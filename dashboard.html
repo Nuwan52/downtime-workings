@@ -479,7 +479,7 @@ function activatePeriod(type){
     document.getElementById('monthSel').classList[type==='month'?'remove':'add']('hidden');
     document.getElementById('yearSel').classList[type==='year'?'remove':'add']('hidden');
     const sel=document.getElementById(type+'Sel');
-    if(sel&&!sel.value&&sel.options.length>0)sel.value=sel.options[sel.options.length-1].value;
+    if(sel&&sel.options.length>0)sel.value=sel.options[sel.options.length-1].value;
     if(sel&&sel.value)onPeriodSelect(type);
 }
 function setDateDefaults(){
@@ -632,7 +632,19 @@ function selectPlant(plant){
     processData();
 }
 function renderPlantTiles(){
-    const plants=[...new Set(rawRows.filter(r=>r).map(r=>{const v=get(r,'Search_Name');return v&&v!=='Grand Total'&&v!=='Total'?v:null;}))].filter(Boolean).sort();
+    const plants=[...new Set(rawRows.filter(r=>r).map(r=>{const v=get(r,'Search_Name');return v&&v!=='Grand Total'&&v!=='Total'?v:null;}))].filter(Boolean);
+    
+    // Custom order requested by user
+    const customOrder = ['FCC', 'ICE', 'PC', 'TBR', 'CALTEX', 'HORANA', 'ASSEMBLY B2B'];
+    plants.sort((a, b) => {
+        const idxA = customOrder.indexOf(a.toUpperCase());
+        const idxB = customOrder.indexOf(b.toUpperCase());
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.localeCompare(b);
+    });
+
     const el=document.getElementById('plantTiles');
     if(!plants.length){el.innerHTML='';return;}
     const tile=(val,label)=>`<span onclick="selectPlant('${val.replace(/'/g,"\\'")}')" class="plant-tile${gf.pl===val?' pt-active':''}">${label}</span>`;
@@ -1690,11 +1702,14 @@ function openMaintMachModal(machineName,allTime=false){
         for(const yr of Object.keys(window._mmYrCodeData[code]))
             for(let m=1;m<=12;m++){const mo=String(m).padStart(2,'0');if(!window._mmYrCodeData[code][yr][mo])window._mmYrCodeData[code][yr][mo]=0;}
 
-    window._selectCode=function(code){
+    window._selectCode=function(code, desc){
         window._mmSelectedCode=code;
         window._updateYrChart(window._mmYrDefault);
         const tag=document.getElementById('mmrc_filter_tag');
-        if(tag)tag.textContent=code?`Filtered: ${code}`:'';
+        if(tag){
+            tag.textContent=code?`Filtered: ${code}${desc?' — '+desc:''}`:'';
+            tag.style.display=code?'inline-block':'none';
+        }
         const btn=document.getElementById('mmrc_reset_code');
         if(btn)btn.style.display=code?'inline-block':'none';
     };
@@ -1764,7 +1779,7 @@ function openMaintMachModal(machineName,allTime=false){
     const inner=document.createElement('div');
     inner.style.cssText='background:var(--card);border-radius:16px;border:1px solid var(--border);width:100%;max-width:960px;overflow:hidden;margin:auto;box-shadow:0 24px 60px rgba(0,0,0,.6)';
     inner.innerHTML=
-        `<div style="padding:1.4rem 1.75rem;background:linear-gradient(135deg,rgba(248,113,113,.13),rgba(236,238,242,1));border-bottom:1px solid var(--border);border-left:4px solid #f87171;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+        `<div style="padding:1.4rem 1.75rem;background:linear-gradient(135deg,rgba(248,113,113,.13),var(--card));border-bottom:1px solid var(--border);border-left:4px solid #f87171;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
             <div>
                 <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.4rem">
                     <h2 style="font-size:1.3rem;font-weight:800;color:var(--txt);letter-spacing:.01em;margin:0">${machineName}</h2>
@@ -1777,8 +1792,8 @@ function openMaintMachModal(machineName,allTime=false){
         <div style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)">
             ${[{val:(totalDT/60).toFixed(1),lbl:'Total Hours',col:'#f87171'},{val:rows.length,lbl:'Incidents',col:'#fb923c'},{val:Object.keys(rcMap).length,lbl:'Failure Codes',col:'#fbbf24'},{val:avgHrs,lbl:'Avg Hrs / Incident',col:'#8b5cf6'}].map((k,i)=>`<div style="padding:1.2rem 1rem;text-align:center;${i<3?'border-right:1px solid var(--border)':''}"><div style="font-size:1.7rem;font-weight:800;color:${k.col};line-height:1;letter-spacing:-.02em">${k.val}</div><div style="font-size:.58rem;color:#475569;margin-top:.35rem;text-transform:uppercase;letter-spacing:.08em">${k.lbl}</div></div>`).join('')}
         </div>
-        <div style="display:grid;grid-template-columns:3fr 2fr;border-bottom:1px solid var(--border)">
-            <div style="padding:1.2rem 1.5rem;border-right:1px solid var(--border)">
+        <div style="border-bottom:1px solid var(--border)">
+            <div style="padding:1.2rem 1.5rem">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;flex-wrap:wrap;gap:.35rem">
                     <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
                         <div style="font-size:.62rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Monthly Performance (${defaultYear})</div>
@@ -1788,11 +1803,7 @@ function openMaintMachModal(machineName,allTime=false){
                         <button id="mmrc_reset_code" onclick="window._selectCode(null)" style="display:none;padding:.12rem .5rem;font-size:.62rem;border-radius:6px;border:1px solid #475569;cursor:pointer;background:transparent;color:#6b7280;font-family:'Inter',sans-serif">✕ All codes</button>
                     </div>
                 </div>
-                <div style="height:220px"><canvas id="mmrc_pareto"></canvas></div>
-            </div>
-            <div style="padding:1.2rem 1.5rem">
-                <div style="font-size:.62rem;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem">Monthly Breakdown Trend</div>
-                <div style="height:220px"><canvas id="mmrc_trend"></canvas></div>
+                <div style="height:250px"><canvas id="mmrc_pareto"></canvas></div>
             </div>
         </div>
         <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border)">
@@ -1800,7 +1811,7 @@ function openMaintMachModal(machineName,allTime=false){
             <div style="overflow-x:auto;max-height:190px;overflow-y:auto;border-radius:8px;border:1px solid #c4c8d1">
                 <table style="width:100%;border-collapse:collapse;font-size:.78rem">
                     <thead style="position:sticky;top:0;background:var(--bg2)"><tr>${['Code','Description','Hours','Incidents'].map(h=>`<th style="padding:.45rem .9rem;text-align:left;color:#475569;font-weight:600;font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);white-space:nowrap">${h}</th>`).join('')}</tr></thead>
-                    <tbody>${topRC.map((r,i)=>{const safe=r.rc.replace(/'/g,"\\'");return`<tr onclick="window._selectCode('${safe}')" style="cursor:pointer;background:${i%2?'var(--table-bg-alt)':'transparent'}" onmouseover="this.style.background='rgba(248,113,113,.1)'" onmouseout="this.style.background='${i%2?'rgba(0,0,0,.02)':'transparent'}'"><td style="padding:.4rem .9rem;color:#e07b1c;font-weight:700;border-bottom:1px solid var(--border);font-family:monospace;font-size:.75rem">${r.rc}</td><td style="padding:.4rem .9rem;color:#6b7280;border-bottom:1px solid var(--border);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.desc.slice(0,50)}</td><td style="padding:.4rem .9rem;color:#4ade80;font-weight:700;border-bottom:1px solid var(--border)">${(r.downtime/60).toFixed(1)}</td><td style="padding:.4rem .9rem;color:var(--txt);border-bottom:1px solid var(--border)">${r.incidents}</td></tr>`;}).join('')}</tbody>
+                    <tbody>${topRC.map((r,i)=>{const safe=r.rc.replace(/'/g,"\\'");const safeDesc=r.desc.replace(/'/g,"\\'");return`<tr onclick="window._selectCode('${safe}', '${safeDesc}')" style="cursor:pointer;background:${i%2?'var(--table-bg-alt)':'transparent'}" onmouseover="this.style.background='rgba(248,113,113,.1)'" onmouseout="this.style.background='${i%2?'rgba(0,0,0,.02)':'transparent'}'"><td style="padding:.4rem .9rem;color:#e07b1c;font-weight:700;border-bottom:1px solid var(--border);font-family:monospace;font-size:.75rem">${r.rc}</td><td style="padding:.4rem .9rem;color:#6b7280;border-bottom:1px solid var(--border);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.desc.slice(0,50)}</td><td style="padding:.4rem .9rem;color:#4ade80;font-weight:700;border-bottom:1px solid var(--border)">${(r.downtime/60).toFixed(1)}</td><td style="padding:.4rem .9rem;color:var(--txt);border-bottom:1px solid var(--border)">${r.incidents}</td></tr>`;}).join('')}</tbody>
                 </table>
             </div>
         </div>
@@ -1838,22 +1849,11 @@ function openMaintMachModal(machineName,allTime=false){
             labels:months,
             datasets:[{label:'Downtime (hrs)',data:vals,backgroundColor:barColors,borderRadius:4}]
         },options:{responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw.toFixed(1)} hrs`}}},
+            onClick:(_,els)=>{if(els.length)openMaintMonthDrill(machineName,defaultYear,els[0].index,allMachineRows);},
+            plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw.toFixed(1)} hrs — Click for details`}}},
             scales:{x:{...AX,grid:{display:false},ticks:{...AX.ticks,font:{size:9}}},
                 y:{...AX,position:'left',grid: AX.grid,title:{display:true,text:'Hours',color: AX.ticks.color,font:{size:9}}}}}});
         _maintModalCharts.push(window._mmYrChart);
-        const tc=document.getElementById('mmrc_trend');
-        if(tc&&trendKeys.length){
-            const tg=tc.getContext('2d').createLinearGradient(0,0,0,200);
-            tg.addColorStop(0,'rgba(224,123,28,.35)');
-            tg.addColorStop(1,'rgba(224,123,28,.02)');
-            _maintModalCharts.push(new Chart(tc,{type:'line',data:{labels:trendKeys,datasets:[
-                {label:'Downtime (hrs)',data:trendData,borderColor:'#e07b1c',backgroundColor:tg,fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#e07b1c',pointBorderColor:'#ffffff',pointBorderWidth:1.5,borderWidth:2}
-            ]},options:{responsive:true,maintainAspectRatio:false,
-                plugins:{legend:{display:false}},
-                scales:{x:{...AX,grid: AX.grid,ticks:{...AX.ticks,font:{size:9}}},
-                    y:{...AX,position:'left',grid: AX.grid,title:{display:true,text:'Hours',color: AX.ticks.color,font:{size:9}}}}}}));
-        }
     },50);
 }
 function closeMaintMachModal(){
@@ -1865,6 +1865,81 @@ function closeMaintMachModal(){
     window._mmYrCodeData=null;
     window._mmSelectedCode=null;
     window._mmYrDefault=null;
+}
+
+function openMaintMonthDrill(machineName, year, monthIdx, allRows) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const monthName = months[monthIdx];
+    const monthKey = String(monthIdx + 1).padStart(2, '0');
+    
+    const filtered = allRows.filter(r => {
+        const rawDate = get(r, 'PostingDate');
+        let d = null;
+        if (rawDate instanceof Date) d = rawDate;
+        else if (typeof rawDate === 'string') { d = new Date(rawDate); if (isNaN(d)) d = null; }
+        else if (typeof rawDate === 'number') d = new Date((rawDate - 25569) * 86400000);
+        if (!d || isNaN(d)) return false;
+        return d.getFullYear().toString() === year && String(d.getMonth() + 1).padStart(2, '0') === monthKey;
+    });
+
+    if (filtered.length === 0) return;
+
+    const rcMap = {};
+    for (const r of filtered) {
+        const rc = (get(r, 'ReasonCode') || '').toString().trim();
+        const desc = (get(r, 'Reason Description') || rc).trim();
+        const dt = parseFloat(get(r, 'Down Time (Min)')) || 0;
+        if (!rcMap[rc]) rcMap[rc] = { rc, desc, downtime: 0 };
+        rcMap[rc].downtime += dt;
+    }
+
+    const sorted = Object.values(rcMap).sort((a, b) => b.downtime - a.downtime);
+    
+    const modal = document.createElement('div');
+    modal.id = 'maintMonthDrillModal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10001;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+    const inner = document.createElement('div');
+    inner.style.cssText = 'background:var(--card);border-radius:12px;border:1px solid var(--border);width:100%;max-width:600px;padding:1.5rem;box-shadow:0 20px 40px rgba(0,0,0,0.5);position:relative;';
+    inner.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <div>
+                <h3 style="margin:0;font-size:1rem;color:var(--txt);">${machineName} - ${monthName} ${year}</h3>
+                <div style="font-size:0.75rem;color:var(--txt2);">Downtime Hours by Reason Code</div>
+            </div>
+            <button onclick="document.getElementById('maintMonthDrillModal').remove()" style="background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--txt2);cursor:pointer;padding:4px 10px;font-size:12px;">✕ Close</button>
+        </div>
+        <div style="height:350px;"><canvas id="mmMonthDrillChart"></canvas></div>
+    `;
+    modal.appendChild(inner);
+    document.body.appendChild(modal);
+
+    const ctx = document.getElementById('mmMonthDrillChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sorted.map(s => s.rc),
+            datasets: [{
+                label: 'Downtime (hrs)',
+                data: sorted.map(s => +(s.downtime / 60).toFixed(2)),
+                backgroundColor: sorted.map((_, i) => COLS[i % COLS.length]),
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: c => ` ${sorted[c.dataIndex].desc}: ${c.raw} hrs` } }
+            },
+            scales: {
+                x: { ...AX, grid: { display: false }, ticks: { ...AX.ticks, font: { size: 10 } } },
+                y: { ...AX, title: { display: true, text: 'Hours', color: AX.ticks.color, font: { size: 10 } } }
+            }
+        }
+    });
 }
 
 function openReasonCodeModal(reasonCode){
