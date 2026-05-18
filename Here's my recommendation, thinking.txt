@@ -1,0 +1,51 @@
+ Here's my recommendation, thinking about what's actually actionable for each failure type:
+
+  ---
+  Machine Breakdown
+  The key questions are which machines, why, and when. I'd show:
+  1. Line graph for month on month /daily  down time hours and percentage  month and daily should be toggle 
+  2. Top machines by breakdown hours (vertical) — identifies repeat offenders
+  3. When clicked on the machine it should have a pop up showing what happen to that machine in detail 
+  3. Breakdown by reason code (donut) — what type of failures dominate this should be under 504 series only
+  4. By shift (pie) — whether a particular shift correlates with more failures
+  5.machine heatmap list based on 504 series related codes 
+ 
+  
+
+  ---
+  Mold Breakdown
+  Here the focus shifts from machine to mold/item. I'd show:
+  1. Top molds (item description) by downtime hours (horizontal bar)
+  2. Top machines affected by mold issues (bar) — same mold on different machines or vice versa
+  3. Reason code breakdown for mold issues (donut)
+  4. Trend over time (line)
+
+  ---
+  Utility Failure
+  These tend to be short, clustered, and tied to infrastructure. I'd show:
+  1. Failure type by reason code (bar) — e.g. air, water, chiller
+  2. Affected work centers / machines (bar)
+  3. By shift (pie) — utility failures often cluster on certain shifts
+  4. Trend over time (line) — to spot if a recurring issue is escalating
+
+  ---
+  Power Failure
+  Simplest category — usually plant-wide events. I'd show:
+  1. Incidents and total hours by plant (bar) — which site is most affected
+  2. Monthly frequency trend (bar) — how often per month
+  3. Duration distribution (bar bucketed by duration range) — are these short trips or extended outages
+  4. By shift (pie)
+
+  ---
+  Preventive Maintenance
+  This is planned, so downtime % doesn't apply — focus on coverage and scheduling pattern instead:
+  1. PM hours by machine (horizontal bar) — which machines consume most PM time
+  2. PM hours trend by month (bar) — is PM being done consistently
+  3. By shift (pie) — when is PM being done
+  4. Top PM reason codes (donut) — what type of PM dominates
+
+  ---
+  Summary of differences from the current layout:
+  - Machine breakdown & Mold breakdown: similar structure but mold replaces machine with mold/item as primary dimension
+  - Utility & Power: reason-code/location focused, duration matters more than trend
+  - PM: drop the % and replace with coverage/scheduling focus; no machine-level efficiency metric

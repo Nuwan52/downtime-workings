@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-Content *)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(node server.js)"
+    ]
+  }
+}

@@ -1,0 +1,332 @@
+<style>
+.step{border:0.5px solid var(--color-border-tertiary);border-left:2px solid #0F6E56;border-radius:0;padding:10px 14px;margin-bottom:1px;background:var(--color-background-primary)}
+.step:first-child{border-radius:var(--border-radius-md) var(--border-radius-md) 0 0}
+.step:last-child{border-radius:0 0 var(--border-radius-md) var(--border-radius-md);margin-bottom:0}
+.step-n{font-size:10px;font-weight:500;color:var(--color-text-tertiary);margin:0 0 3px;letter-spacing:.05em}
+.step-t{font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 4px}
+.step-d{font-size:12px;color:var(--color-text-secondary);margin:0 0 6px;line-height:1.6}
+.cmd{font-size:12px;font-family:var(--font-mono);padding:6px 10px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);display:block;margin-top:4px;white-space:pre}
+.mode-btn{font-size:12px;padding:5px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+.mode-btn.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+.rc{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;margin-bottom:6px;background:var(--color-background-primary);cursor:pointer}
+.rc.sel{border-color:var(--color-border-info);background:var(--color-background-info)}
+.rceq{font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 2px}
+.rcmeta{font-size:11px;color:var(--color-text-tertiary);margin:0 0 3px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rcnote{font-size:12px;color:var(--color-text-secondary);margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pill-m{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.pill-mo{background:#EAF3DE;color:#3B6D11}
+.pill-co{background:#FAEEDA;color:#BA7517}
+.pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:var(--border-radius-md)}
+.out-box{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:14px 16px;background:var(--color-background-primary);min-height:140px;white-space:pre-wrap;font-size:13px;line-height:1.7;color:var(--color-text-primary)}
+.tab-btn{font-size:12px;padding:5px 14px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+.tab-btn:first-child{border-radius:var(--border-radius-md) 0 0 var(--border-radius-md)}
+.tab-btn:last-child{border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;border-left:none}
+.tab-btn.active{background:var(--color-background-secondary);color:var(--color-text-primary)}
+</style>
+<div style="padding:0 0 1.5rem">
+
+<div style="display:flex;gap:0;margin-bottom:1.25rem">
+  <button class="tab-btn active" onclick="showTab('setup',this)">Setup guide</button>
+  <button class="tab-btn" onclick="showTab('analyser',this)">AI analyser</button>
+</div>
+
+<div id="tab-setup">
+  <div style="padding:8px 12px;border-radius:var(--border-radius-md);background:var(--color-background-warning);border:0.5px solid var(--color-border-warning);margin-bottom:12px">
+    <p style="font-size:12px;color:var(--color-text-warning);margin:0"><strong>Recommended model:</strong> llama3.1:8b for a standard server (8–16GB RAM). Use mistral:7b as a lighter alternative. For a more powerful machine (32GB+), llama3.1:70b gives analysis quality closer to Claude.</p>
+  </div>
+
+  <div class="step">
+    <p class="step-n">STEP 1 — SERVER</p>
+    <p class="step-t">Install Ollama on a server on your factory LAN</p>
+    <p class="step-d">Any machine with a decent GPU (or 16GB+ RAM for CPU-only). Ubuntu 22.04 recommended. Run this on the server:</p>
+    <code class="cmd">curl -fsSL https://ollama.com/install.sh | sh</code>
+  </div>
+
+  <div class="step">
+    <p class="step-n">STEP 2 — MODEL</p>
+    <p class="step-t">Pull the model you want to use</p>
+    <p class="step-d">This downloads the model weights to the server (~4–8GB). Only needed once.</p>
+    <code class="cmd">ollama pull llama3.1:8b</code>
+    <code class="cmd" style="margin-top:6px">ollama pull mistral:7b        # lighter alternative</code>
+  </div>
+
+  <div class="step">
+    <p class="step-n">STEP 3 — NETWORK ACCESS</p>
+    <p class="step-t">Allow other devices on the LAN to reach Ollama</p>
+    <p class="step-d">By default Ollama only listens on localhost. Set this environment variable so the Phoenix dashboard (on any LAN device) can call it:</p>
+    <code class="cmd">OLLAMA_HOST=0.0.0.0:11434 ollama serve</code>
+    <p class="step-d" style="margin-top:6px">Or add it permanently to <code>/etc/systemd/system/ollama.service</code> as an Environment line. Then open port 11434 in your firewall — but only to the factory LAN subnet, not the internet.</p>
+  </div>
+
+  <div class="step">
+    <p class="step-n">STEP 4 — TEST</p>
+    <p class="step-t">Verify from another machine on the LAN</p>
+    <p class="step-d">Replace 192.168.1.50 with your server's actual LAN IP:</p>
+    <code class="cmd">curl http://192.168.1.50:11434/api/generate \
+  -d '{"model":"llama3.1:8b","prompt":"hello","stream":false}'</code>
+    <p class="step-d" style="margin-top:6px">If you get a JSON response back, the Phoenix analyser is ready to connect.</p>
+  </div>
+
+  <div class="step" style="border-left-color:#185FA5">
+    <p class="step-n">STEP 5 — PHOENIX ANALYSER</p>
+    <p class="step-t">Point the analyser at your Ollama server</p>
+    <p class="step-d">In the AI analyser tab: select "Local (Ollama)", enter your server IP, pick your model, and run. No other changes needed — the request format is compatible.</p>
+  </div>
+
+  <div style="margin-top:10px;padding:10px 14px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary)">
+    <p style="font-size:12px;font-weight:500;margin:0 0 6px;color:var(--color-text-primary)">API difference — Anthropic vs Ollama</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div>
+        <p style="font-size:11px;color:var(--color-text-tertiary);margin:0 0 4px">Anthropic (cloud)</p>
+        <code style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-secondary)">POST api.anthropic.com/v1/messages
+model: claude-sonnet-4-20250514
+messages: [{role,content}]</code>
+      </div>
+      <div>
+        <p style="font-size:11px;color:var(--color-text-tertiary);margin:0 0 4px">Ollama (local)</p>
+        <code style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-secondary)">POST &lt;server-ip&gt;:11434/api/chat
+model: llama3.1:8b
+messages: [{role,content}]</code>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--color-text-tertiary);margin:6px 0 0">The messages array format is identical. The only changes are the URL, the model name, and no API key header needed.</p>
+  </div>
+</div>
+
+<div id="tab-analyser" style="display:none">
+
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:1rem">
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem">
+      <p style="font-size:11px;color:var(--color-text-secondary);margin:0 0 2px">Records</p>
+      <p style="font-size:20px;font-weight:500;margin:0;color:var(--color-text-primary)">12</p>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem">
+      <p style="font-size:11px;color:var(--color-text-secondary);margin:0 0 2px">Machines</p>
+      <p style="font-size:20px;font-weight:500;margin:0;color:var(--color-text-primary)">3</p>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem">
+      <p style="font-size:11px;color:var(--color-text-secondary);margin:0 0 2px">Molds</p>
+      <p style="font-size:20px;font-weight:500;margin:0;color:var(--color-text-primary)">3</p>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem">
+      <p style="font-size:11px;color:var(--color-text-secondary);margin:0 0 2px">Combination faults</p>
+      <p style="font-size:20px;font-weight:500;margin:0;color:var(--color-text-warning)">4</p>
+    </div>
+  </div>
+
+  <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 14px;margin-bottom:1rem;background:var(--color-background-primary)">
+    <p style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin:0 0 8px;letter-spacing:.04em">AI BACKEND</p>
+    <div style="display:grid;grid-template-columns:auto 1fr 1fr auto;gap:8px;align-items:center">
+      <select id="aiProvider" onchange="toggleProvider()" style="font-size:12px;padding:4px 8px">
+        <option value="ollama">Local (Ollama)</option>
+        <option value="anthropic">Anthropic (cloud)</option>
+      </select>
+      <div id="ollamaFields" style="display:contents">
+        <input id="ollamaHost" type="text" placeholder="Server IP e.g. 192.168.1.50" value="192.168.1.50" style="font-size:12px;padding:4px 8px"/>
+        <select id="ollamaModel" style="font-size:12px;padding:4px 8px">
+          <option value="llama3.1:8b">llama3.1:8b</option>
+          <option value="llama3.1:70b">llama3.1:70b</option>
+          <option value="mistral:7b">mistral:7b</option>
+          <option value="mistral-nemo">mistral-nemo</option>
+          <option value="phi3:mini">phi3:mini (lightweight)</option>
+        </select>
+      </div>
+      <div id="anthropicFields" style="display:none;grid-column:2/4">
+        <p style="font-size:11px;color:var(--color-text-tertiary);margin:0">Uses api.anthropic.com · claude-sonnet-4-20250514 · data leaves your network</p>
+      </div>
+      <span id="connStatus" style="font-size:11px;color:var(--color-text-tertiary)">not tested</span>
+    </div>
+    <button onclick="testConnection()" style="font-size:11px;margin-top:8px">Test connection</button>
+  </div>
+
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem">
+    <button class="mode-btn active" onclick="setMode('recurring',this)">Recurring faults</button>
+    <button class="mode-btn" onclick="setMode('moldvsmachine',this)">Mold vs machine</button>
+    <button class="mode-btn" onclick="setMode('combo',this)">Combination faults</button>
+    <button class="mode-btn" onclick="setMode('predict',this)">Predictive signals</button>
+    <button class="mode-btn" onclick="setMode('summary',this)">Summarise</button>
+    <button class="mode-btn" onclick="setMode('search',this)">Similarity search</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:12px;font-weight:500;color:var(--color-text-secondary)">Records</span>
+        <button style="font-size:11px" onclick="selectAll()">Select all</button>
+      </div>
+      <div id="recList" style="max-height:380px;overflow-y:auto;padding-right:2px"></div>
+      <div id="searchWrap" style="display:none;margin-top:8px">
+        <textarea id="searchQ" rows="2" placeholder="Describe the fault to find similar events…" style="width:100%;font-size:12px;padding:7px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);resize:none;box-sizing:border-box"></textarea>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <p style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin:0" id="modeLabel">Recurring faults</p>
+        <button id="runBtn" onclick="runAnalysis()" style="font-size:12px">Run analysis ↗</button>
+      </div>
+      <div id="outBox" class="out-box" style="color:var(--color-text-tertiary);font-style:italic">Select records then click Run analysis.</div>
+      <div id="streamStatus" style="font-size:11px;color:var(--color-text-tertiary);margin-top:5px;min-height:16px"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function showTab(name,btn){
+  document.getElementById('tab-setup').style.display=name==='setup'?'block':'none';
+  document.getElementById('tab-analyser').style.display=name==='analyser'?'block':'none';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function toggleProvider(){
+  const p=document.getElementById('aiProvider').value;
+  document.getElementById('ollamaFields').style.display=p==='ollama'?'contents':'none';
+  document.getElementById('anthropicFields').style.display=p==='anthropic'?'block':'none';
+  document.getElementById('connStatus').textContent='not tested';
+}
+
+async function testConnection(){
+  const p=document.getElementById('aiProvider').value;
+  const status=document.getElementById('connStatus');
+  status.textContent='Testing…';status.style.color='var(--color-text-tertiary)';
+  if(p==='anthropic'){status.textContent='Cloud — no test needed';status.style.color='var(--color-text-success)';return;}
+  const host=document.getElementById('ollamaHost').value.trim();
+  try{
+    const res=await fetch(`http://${host}:11434/api/tags`,{signal:AbortSignal.timeout(4000)});
+    if(res.ok){
+      const d=await res.json();
+      const models=(d.models||[]).map(m=>m.name).join(', ')||'no models pulled yet';
+      status.textContent='Connected · '+models;status.style.color='var(--color-text-success)';
+    } else {status.textContent='Server responded with '+res.status;status.style.color='var(--color-text-warning)';}
+  }catch(e){
+    status.textContent='Cannot reach server — check IP and port 11434';status.style.color='var(--color-text-danger)';
+  }
+}
+
+const recs=[
+  {id:1,date:'02 May',machine:'Press #3',mold:'M-204',area:'Assembly Line A',origin:'MACHINE',code:'ELEC-CTRL-PLC',note:'E-305 watchdog timeout axis 2. Third time in 10 days. Warm restart clears it. Loose I/O card rack 3 suspected — happens with any mold. Replacement ordered.'},
+  {id:2,date:'01 May',machine:'Press #3',mold:'M-204',area:'Assembly Line A',origin:'MACHINE',code:'ELEC-CTRL-PLC',note:'E-305 again. Confirmed with other molds too — Press #3 issue not M-204. Warm restart. I/O card still pending. Escalated.'},
+  {id:3,date:'29 Apr',machine:'Press #1',mold:'M-204',area:'Assembly Line A',origin:'COMBINATION',code:'MECH-BRK-COUP',note:'M-204 on Press #1 causes tie bar vibration. Not seen on Press #3. Platens not parallel on Press #1 side B: 0.12mm out. Shimmed. M-204 on Press #1 always needs attention.'},
+  {id:4,date:'27 Apr',machine:'Press #2',mold:'M-112',area:'Press Shop',origin:'MOLD',code:'MECH-WEAR-SEAL',note:'M-112 ejector pin #7 bent — cavity 3 damage. Same pin issue as Feb. History of ejector problems. Repaired. Recommend PM interval 50k→30k shots.'},
+  {id:5,date:'25 Apr',machine:'Press #3',mold:'M-112',area:'Assembly Line A',origin:'MOLD',code:'MECH-WEAR-SEAL',note:'M-112 ejector pin #7 bent again on Press #3. 18k since last repair. Pin undersize for material. NCR raised. Temp fix done.'},
+  {id:6,date:'22 Apr',machine:'Press #1',mold:'M-307',area:'Assembly Line A',origin:'MACHINE',code:'HYD-SEAL-CYL',note:'Cylinder rod seal weeping Press #1. Not mold-related. Seal replaced. Third seal event this quarter on Press #1 hydraulics.'},
+  {id:7,date:'20 Apr',machine:'Press #2',mold:'M-307',area:'Press Shop',origin:'MOLD',code:'TOOL-WEAR-CUT',note:'M-307 cooling channel #2 blocked — cycle time up 8%. Pressure flushed. Channel wall erosion at bend. Design limitation — will block again. Logged for mold shop.'},
+  {id:8,date:'18 Apr',machine:'Press #1',mold:'M-307',area:'Assembly Line A',origin:'COMBINATION',code:'ELEC-SNS-LS',note:'M-307 on Press #1 triggers spurious LS-14 fault on mold open. Same mold on Press #2 no issue. Cam follower worn + M-307 actuator timing marginal. Both fixed.'},
+  {id:9,date:'15 Apr',machine:'Press #3',mold:'M-204',area:'Assembly Line A',origin:'MOLD',code:'TOOL-WEAR-DIE',note:'M-204 cavity 2 flash increasing — parting line wear on any press. Clearance 0.08mm (limit 0.05mm). Mold pulled for regrind.'},
+  {id:10,date:'10 Apr',machine:'Press #2',mold:'M-112',area:'Press Shop',origin:'MOLD',code:'TOOL-DMG-DIE',note:'M-112 cavity 3 crack — heat checking at 48k shots. Insert replaced. Cooling inadequate at gate. Recommend increased flow next run.'},
+  {id:11,date:'05 Apr',machine:'Press #1',mold:'M-204',area:'Assembly Line A',origin:'COMBINATION',code:'ELEC-CTRL-VFD',note:'VFD fault E12 only when M-204 on Press #1 — inertia mismatch. M-204 is 2.2T, decel ramp too short. Adjusted 0.8s→1.4s. No fault since.'},
+  {id:12,date:'01 Apr',machine:'Press #3',mold:'M-307',area:'Assembly Line A',origin:'MACHINE',code:'MECH-WEAR-BRG',note:'Platen guide bush worn Press #3. Play 0.15mm (limit 0.10mm). Bush replaced. Not mold-related — consistent wear pattern across all molds.'}
+];
+
+let sel=new Set();let mode='recurring';
+
+function renderList(){
+  const list=document.getElementById('recList');list.innerHTML='';
+  recs.forEach(r=>{
+    const oc=r.origin==='MOLD'?'pill-mo':r.origin==='COMBINATION'?'pill-co':'pill-m';
+    const card=document.createElement('div');
+    card.className='rc'+(sel.has(r.id)?' sel':'');
+    card.onclick=()=>{sel.has(r.id)?sel.delete(r.id):sel.add(r.id);card.classList.toggle('sel');updateRunBtn();};
+    card.innerHTML=`<p class="rceq">${r.machine} — <span style="font-weight:400">${r.mold}</span></p>
+    <div class="rcmeta"><span>${r.date}</span><span class="pill ${oc}">${r.origin}</span><span style="font-family:var(--font-mono);font-size:10px">${r.code}</span></div>
+    <p class="rcnote">${r.note}</p>`;
+    list.appendChild(card);
+  });
+  updateRunBtn();
+}
+
+function selectAll(){recs.forEach(r=>sel.add(r.id));renderList();}
+function updateRunBtn(){const n=sel.size;document.getElementById('runBtn').textContent=n?`Run on ${n} records ↗`:'Run analysis ↗';}
+
+function setMode(m,btn){
+  mode=m;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('searchWrap').style.display=m==='search'?'block':'none';
+  const labels={recurring:'Recurring faults',moldvsmachine:'Mold vs machine',combo:'Combination faults',predict:'Predictive signals',summary:'Summarise',search:'Similarity search'};
+  document.getElementById('modeLabel').textContent=labels[m];
+  const ob=document.getElementById('outBox');
+  ob.textContent='Select records then click Run analysis.';ob.style.fontStyle='italic';ob.style.color='var(--color-text-tertiary)';
+  document.getElementById('streamStatus').textContent='';
+}
+
+function buildPrompt(){
+  const selected=recs.filter(r=>sel.has(r.id));
+  const corpus=selected.map((r,i)=>`Record ${i+1}:\nMachine: ${r.machine} | Mold: ${r.mold} | Date: ${r.date}\nFault origin: ${r.origin} | Code: ${r.code}\nEngineer note: ${r.note}`).join('\n\n');
+  const base=`You are a maintenance analyst for Phoenix, a manufacturing plant. Each record is tagged to a machine, a mold, and a fault origin (MACHINE, MOLD, or COMBINATION — meaning the fault only appears when that mold runs on that machine).\n\n`;
+  const prompts={
+    recurring:base+`Identify recurring fault patterns. Focus on whether the same machine, mold, or pairing keeps appearing. Be specific and practical.\n\nRecords:\n${corpus}`,
+    moldvsmachine:base+`Produce a clear breakdown of MACHINE faults vs MOLD faults vs COMBINATION faults. Identify which machines and molds have the worst records. Suggest whether any mold should be restricted from a particular machine.\n\nRecords:\n${corpus}`,
+    combo:base+`Focus only on COMBINATION faults. Identify all problematic mold-machine pairs, explain what makes each pairing problematic, and recommend avoid, modify, or monitor.\n\nRecords:\n${corpus}`,
+    predict:base+`Extract predictive signals — temporary fixes, overdue parts, observations flagged for follow-up. For each: machine, mold, exact phrase, recommended action.\n\nRecords:\n${corpus}`,
+    summary:base+`Write a plain-English summary for a plant manager: machines with most issues, molds with most issues, problematic combinations, outstanding risks and actions.\n\nRecords:\n${corpus}`,
+    search:base+`Find records most similar to this fault description. Note fault origin for each match and whether the historical resolution might apply.\n\nSearch: ${document.getElementById('searchQ')?.value||'(none)'}\n\nRecords:\n${corpus}`
+  };
+  return prompts[mode];
+}
+
+async function runAnalysis(){
+  if(sel.size===0){const ob=document.getElementById('outBox');ob.textContent='Select at least one record.';ob.style.fontStyle='italic';ob.style.color='var(--color-text-warning)';return;}
+  const ob=document.getElementById('outBox');const status=document.getElementById('streamStatus');const btn=document.getElementById('runBtn');
+  ob.textContent='';ob.style.fontStyle='normal';ob.style.color='var(--color-text-primary)';
+  btn.disabled=true;btn.textContent='Running…';
+
+  const provider=document.getElementById('aiProvider').value;
+
+  if(provider==='ollama'){
+    const host=document.getElementById('ollamaHost').value.trim();
+    const model=document.getElementById('ollamaModel').value;
+    status.textContent=`Calling ${model} at ${host}…`;
+    try{
+      const res=await fetch(`http://${host}:11434/api/chat`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model,stream:true,messages:[{role:'user',content:buildPrompt()}]})
+      });
+      if(!res.ok){ob.textContent='Ollama error: '+res.status+' — check server is running and model is pulled';ob.style.color='var(--color-text-danger)';status.textContent='';btn.disabled=false;btn.textContent=`Run on ${sel.size} records ↗`;return;}
+      const reader=res.body.getReader();const decoder=new TextDecoder();let buf='';
+      status.textContent='Streaming from local model…';
+      while(true){
+        const{done,value}=await reader.read();if(done)break;
+        buf+=decoder.decode(value,{stream:true});
+        const lines=buf.split('\n');buf=lines.pop();
+        for(const line of lines){
+          if(!line.trim())continue;
+          try{const j=JSON.parse(line);if(j.message?.content){ob.textContent+=j.message.content;ob.scrollTop=ob.scrollHeight;}}catch{}
+        }
+      }
+      status.textContent=`Done · ${model} · ${sel.size} records · all data stayed on your network`;
+    }catch(e){
+      ob.textContent='Cannot reach Ollama server at '+host+'\n\nCheck:\n1. Server is running (ollama serve)\n2. OLLAMA_HOST=0.0.0.0:11434 is set\n3. Port 11434 is open on the server firewall\n4. You are on the same LAN';
+      ob.style.color='var(--color-text-danger)';status.textContent='';
+    }
+  } else {
+    status.textContent='Calling Anthropic API…';
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,stream:true,messages:[{role:'user',content:buildPrompt()}]})
+      });
+      if(!res.ok){const e=await res.json();ob.textContent='API error: '+(e.error?.message||res.status);ob.style.color='var(--color-text-danger)';status.textContent='';btn.disabled=false;btn.textContent=`Run on ${sel.size} records ↗`;return;}
+      const reader=res.body.getReader();const decoder=new TextDecoder();let buf='';
+      status.textContent='Streaming…';
+      while(true){
+        const{done,value}=await reader.read();if(done)break;
+        buf+=decoder.decode(value,{stream:true});
+        const lines=buf.split('\n');buf=lines.pop();
+        for(const line of lines){
+          if(!line.startsWith('data: '))continue;
+          const d=line.slice(6).trim();if(d==='[DONE]')continue;
+          try{const j=JSON.parse(d);if(j.type==='content_block_delta'&&j.delta?.text){ob.textContent+=j.delta.text;ob.scrollTop=ob.scrollHeight;}}catch{}
+        }
+      }
+      status.textContent=`Done · ${sel.size} records analysed`;
+    }catch(e){ob.textContent='Error: '+e.message;ob.style.color='var(--color-text-danger)';status.textContent='';}
+  }
+  btn.disabled=false;btn.textContent=`Run on ${sel.size} records ↗`;
+}
+
+renderList();
+</script>
