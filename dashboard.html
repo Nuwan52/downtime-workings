@@ -99,6 +99,75 @@
         @keyframes spin{to{transform:rotate(360deg)}}
         .hint{font-size:.7rem;color:var(--txt3);margin-top:.5rem}
 
+        /* Presentation Mode */
+        .pres-mode .filter-bar, 
+        .pres-mode header .btn-secondary,
+        .pres-mode header #userDisplay,
+        .pres-mode .filter-divider { display: none !important; }
+        .pres-mode .container { max-width: 100%; padding: 1rem 2.5rem; }
+        .pres-mode .stat-card.ri { transform: scale(1.05); margin: 0 0.5rem; transition: all 0.3s; }
+        .pres-mode .stat-card.ri.active { border-width: 4px !important; box-shadow: 0 0 20px rgba(224, 123, 28, 0.4); }
+        .pres-mode .card { border-radius: 16px; border-width: 2px; }
+        .pres-mode header h1 { font-size: 2rem !important; flex: 1; text-align: center; }
+        .pres-mode #presExit { display: block !important; position: fixed; bottom: 20px; right: 20px; z-index: 2000; opacity: 0.5; }
+        .pres-mode #presExit:hover { opacity: 1; }
+        #presExit { display: none; }
+
+        /* Presentation Summary View */
+        #presSummary {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #0f172a;
+            color: #f8fafc;
+            z-index: 1500;
+            padding: 4rem;
+            overflow-y: auto;
+        }
+        .pres-mode.show-summary #presSummary { display: block; }
+        .pres-mode.show-summary .container { display: none; }
+        
+        .pres-slide { display: none; height: 100%; animation: fadeIn 0.4s ease-out; }
+        .pres-slide.active { display: flex; flex-direction: column; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .pres-title-slide { text-align: center; justify-content: center; align-items: center; height: 100%; }
+        .pres-title-slide h1 { font-size: 4.5rem; margin-bottom: 1rem; color: #e07b1c; letter-spacing: -0.02em; }
+        .pres-title-slide p { font-size: 1.8rem; color: #94a3b8; }
+
+        .pres-hdr { margin-bottom: 3.5rem; text-align: left; border-left: 6px solid #e07b1c; padding-left: 1.5rem; }
+        .pres-hdr h2 { font-size: 3rem; color: #f8fafc; margin-bottom: 0.5rem; }
+        .pres-hdr p { font-size: 1.2rem; color: #94a3b8; }
+        
+        .pres-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-bottom: 4rem; }
+        .pres-kpi-card { background: #1e293b; border: 1px solid #334155; border-radius: 24px; padding: 2.5rem; text-align: center; }
+        .pres-kpi-card .lbl { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.1em; }
+        .pres-kpi-card .val { font-size: 3.5rem; font-weight: 800; color: #e07b1c; }
+        .pres-kpi-card .sub { font-size: 1.1rem; color: #64748b; margin-top: 0.5rem; }
+        
+        .pres-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2.5rem; }
+        .pres-plant-card { background: #1e293b; border: 1px solid #334155; border-radius: 24px; padding: 2.5rem; }
+        .pres-plant-card h3 { font-size: 2rem; margin-bottom: 1.8rem; color: #e07b1c; display: flex; align-items: center; gap: 1rem; }
+        
+        .pres-stat-row { display: flex; gap: 2rem; margin-bottom: 2rem; background: #0f172a; padding: 1.5rem; border-radius: 16px; }
+        .pres-stat-box { flex: 1; }
+        .pres-stat-box .label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; margin-bottom: 0.4rem; }
+        .pres-stat-box .value { font-size: 1.8rem; font-weight: 700; color: #f8fafc; }
+        
+        .pres-list-hd { font-size: 1rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 1rem; margin-top: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .pres-item { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid #334155; font-size: 1.2rem; }
+        .pres-item:last-child { border-bottom: none; }
+        .pres-item .name { color: #cbd5e1; }
+        .pres-item .time { font-weight: 700; color: #f87171; }
+
+        .pres-controls { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: none; gap: 1.5rem; z-index: 2000; background: rgba(15, 23, 42, 0.8); padding: 0.8rem; border-radius: 40px; backdrop-filter: blur(8px); border: 1px solid #334155; }
+        .pres-mode .pres-controls { display: flex; }
+        .pres-btn { background: #e07b1c; color: white; border: none; padding: 0.8rem 1.8rem; border-radius: 30px; cursor: pointer; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .pres-btn:hover { transform: scale(1.05); background: #f97316; }
+        .pres-btn.secondary { background: #334155; }
+        .pres-btn.exit { background: #dc2626; }
+
         /* Clickable */
         .clik{cursor:pointer}
         .clik:hover td{background:rgba(224,123,28,.12)!important}
@@ -190,6 +259,8 @@ const CONFIG = {
         <h1 style="font-size:1.35rem">Machine Downtime Analytics</h1>
         <div class="header-right">
             <span id="userDisplay" style="color:var(--txt2);font-size:.875rem"></span>
+            <button class="btn btn-secondary" onclick="togglePresentationMode()" title="Presentation Mode">📽️ Present</button>
+            <button class="btn btn-secondary" onclick="toggleMoldPresentationMode()" title="Mold Presentation Mode" style="background:#fbbf24;color:#0f172a">🖌️ Mold Present</button>
             <button class="btn btn-secondary" onclick="toggleTheme()" title="Toggle Light/Dark Theme">🌓 Theme</button>
             <button class="btn btn-secondary" onclick="loadData()">Refresh</button>
             <button class="btn btn-secondary" onclick="logout()">Logout</button>
@@ -227,8 +298,18 @@ const CONFIG = {
 
     <div id="catPanel" class="hidden" style="margin-bottom:1.5rem"></div>
 
-
 </div>
+
+    <div id="presSummary"></div>
+
+    <div class="pres-controls">
+        <button class="pres-btn" onclick="changePresSlide(-1)">← Previous</button>
+        <button class="pres-btn" onclick="togglePresentationMode()">Exit</button>
+        <button class="pres-btn" onclick="changePresSlide(1)">Next →</button>
+    </div>
+
+    <button id="presExit" class="btn btn-primary" onclick="togglePresentationMode()">Exit Presentation</button>
+
 </div>
 
 <!-- DRILL-DOWN MODAL -->
@@ -279,6 +360,21 @@ const CONFIG = {
 </div>
 
 <script>
+// Helper functions (Global)
+function get(row, key) {
+    if (!row) return '';
+    const v = row[key];
+    return v !== undefined && v !== null ? v : '';
+}
+
+function getDateStr(r) {
+    const d = get(r, 'PostingDate');
+    if (!d) return null;
+    if (d instanceof Date) return d.toISOString().slice(0, 10);
+    if (typeof d === 'string') return d.slice(0, 10);
+    return null;
+}
+
 // Theme logic
 function toggleTheme() {
     const html = document.documentElement;
@@ -328,8 +424,610 @@ function updateAllCharts() {
     if(window._dpChart) updateInstance(window._dpChart);
 }
 
+// Presentation Mode Logic
+let presInterval = null;
+let currentPresSlide = 0;
+let totalPresSlides = 0;
+
+function togglePresentationMode() {
+    const isPres = document.body.classList.toggle('pres-mode');
+    if (isPres) {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
+        document.body.classList.add('show-summary');
+        renderPresSummary();
+        currentPresSlide = 0;
+        showSlide(0);
+        
+        // Disable auto slideshow from previous version, use manual navigation
+        if (presInterval) { clearInterval(presInterval); presInterval = null; }
+    } else {
+        if (document.exitFullscreen && document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        }
+        document.body.classList.remove('show-summary');
+        gf.ac = '';
+        processData();
+    }
+}
+
+function toggleMoldPresentationMode() {
+    const isPres = document.body.classList.toggle('pres-mode');
+    if (isPres) {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
+        document.body.classList.add('show-summary');
+        renderMoldPresSummary();
+        currentPresSlide = 0;
+        showSlide(0);
+        if (presInterval) { clearInterval(presInterval); presInterval = null; }
+    } else {
+        if (document.exitFullscreen && document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        }
+        document.body.classList.remove('show-summary');
+        gf.ac = '';
+        processData();
+    }
+}
+
+function renderMoldPresSummary() {
+    const el = document.getElementById('presSummary');
+    if (!el) return;
+
+    if (!pd || !pd.plants || pd.plants.length === 0) {
+        el.innerHTML = '<div class="pres-slide active" style="justify-content:center;align-items:center"><h1>No Data Loaded</h1><p>Please load data before entering presentation mode.</p></div>';
+        return;
+    }
+
+    let monthLabel = "Overall Performance";
+    let curMonthStart = null, prevMonthStart = null;
+    if (gf.fd) {
+        const d = new Date(gf.fd);
+        monthLabel = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        curMonthStart = gf.fd;
+        const prevMonthDate = new Date(d); prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
+        prevMonthStart = prevMonthDate.toISOString().slice(0, 10);
+    }
+
+    const moldRows = rawRows.filter(r => {
+        if (!r) return false;
+        const rc = (get(r, 'ReasonCode') || '').toString().trim();
+        return getCatGroup(rc) === 'Mold related';
+    });
+
+    const plantMoldMap = {};
+    for (const r of moldRows) {
+        const dt = parseFloat(get(r, 'Down Time (Min)')) || 0;
+        if (dt <= 0) continue;
+        const plant = get(r, 'Search_Name') || 'Unknown';
+        if (!plantMoldMap[plant]) plantMoldMap[plant] = { name: plant, downtime: 0 };
+        plantMoldMap[plant].downtime += dt;
+    }
+    const moldPlants = Object.values(plantMoldMap).sort((a, b) => b.downtime - a.downtime);
+    const plantTotal = moldPlants.reduce((sum, p) => sum + p.downtime, 0);
+
+    const moldEvents = [];
+    for (const r of moldRows) {
+        const dt = parseFloat(get(r, 'Down Time (Min)')) || 0;
+        if (dt <= 0) continue;
+        const itemNo = get(r, 'ItemNo');
+        const itemDesc = get(r, 'Item Description');
+        const name = getMappedMoldName(itemNo, itemDesc);
+        if (!name || name === '—') continue;
+        moldEvents.push({
+            mold: name,
+            reason: get(r, 'ReasonDescription') || get(r, 'ReasonCode'),
+            hours: (dt / 60).toFixed(1),
+            dt: dt
+        });
+    }
+    const top10MoldEvents = moldEvents.sort((a, b) => b.dt - a.dt).slice(0, 10);
+
+    const moldTrend = {};
+    for (const r of moldRows) {
+        const ds = getDateStr(r); if (!ds) continue;
+        const itemNo = get(r, 'ItemNo');
+        const itemDesc = get(r, 'Item Description');
+        const name = getMappedMoldName(itemNo, itemDesc);
+        if (!name || name === '—') continue;
+        const dt = parseFloat(get(r, 'Down Time (Min)')) || 0;
+        if (!moldTrend[name]) moldTrend[name] = { cur: 0, prev: 0 };
+        if (curMonthStart && ds.startsWith(curMonthStart.slice(0, 7))) moldTrend[name].cur += dt;
+        else if (prevMonthStart && ds.startsWith(prevMonthStart.slice(0, 7))) moldTrend[name].prev += dt;
+    }
+    const trendList = Object.entries(moldTrend).map(([name, data]) => {
+        const diff = data.cur - data.prev;
+        const pct = data.prev > 0 ? (diff / data.prev * 100).toFixed(0) : (data.cur > 0 ? 100 : 0);
+        return { name, ...data, diff, pct: parseInt(pct) };
+    }).filter(x => x.cur > 0 || x.prev > 0);
+    const improved = trendList.filter(x => x.diff < 0).sort((a, b) => a.diff - b.diff).slice(0, 5);
+    const worsened = trendList.filter(x => x.diff > 0).sort((a, b) => b.diff - a.diff).slice(0, 5);
+    const risingRisk = trendList.sort((a, b) => b.pct - a.pct).slice(0, 5);
+
+    const reasonMap = {};
+    for (const r of moldRows) {
+        const rc = (get(r, 'ReasonCode') || '').toString().trim();
+        const desc = get(r, 'ReasonDescription') || rc;
+        const dt = parseFloat(get(r, 'Down Time (Min)')) || 0;
+        if (!reasonMap[desc]) reasonMap[desc] = 0;
+        reasonMap[desc] += dt;
+    }
+    const top5Reasons = Object.entries(reasonMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+    let html = '';
+
+    html += `
+    <div class="pres-slide pres-title-slide">
+        <h1>Monthly Mold Performance</h1>
+        <p>${monthLabel}</p>
+        <div style="margin-top:4rem;color:#64748b;font-size:1.2rem">Interactive Mold Review</div>
+    </div>`;
+
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 1: Mold Breakdown by Plant</h2>
+            <p>Mold-related downtime distribution across manufacturing sites for ${monthLabel}</p>
+        </div>
+        <div class="pres-grid">
+            ${moldPlants.map(p => {
+                const pct = plantTotal > 0 ? ((p.downtime / plantTotal) * 100).toFixed(1) : '0.0';
+                return `
+                <div class="pres-plant-card">
+                    <h3>${p.name}</h3>
+                    <div class="pres-kpi-card" style="background:#0f172a;padding:1.5rem">
+                        <div class="val" style="font-size:4rem">${pct}%</div>
+                        <div class="sub">${(p.downtime/60).toFixed(0)} Hours</div>
+                    </div>
+                </div>`;
+            }).join('')}
+        </div>
+    </div>`;
+
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 2: Top 10 Mold Breakdown Events</h2>
+            <p>Critical mold-related incidents requiring immediate review</p>
+        </div>
+        <div style="background:#1e293b;border-radius:24px;padding:1.5rem">
+            <table style="width:100%;border-collapse:collapse;font-size:1.2rem">
+                <thead>
+                    <tr style="text-align:left;color:#94a3b8;border-bottom:2px solid #334155">
+                        <th style="padding:1rem">Mold</th>
+                        <th style="padding:1rem">Primary Reason</th>
+                        <th style="padding:1rem;text-align:right">Downtime (Hrs)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${top10MoldEvents.map(e => `
+                    <tr style="border-bottom:1px solid #334155">
+                        <td style="padding:1rem;color:#fbbf24;font-weight:700">${e.mold}</td>
+                        <td style="padding:1rem;color:#cbd5e1">${e.reason}</td>
+                        <td style="padding:1rem;text-align:right;color:#f87171;font-weight:800">${e.hours}h</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+    </div>`;
+
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 3: Monthly Mold Trends</h2>
+            <p>Comparing current mold performance vs previous month</p>
+        </div>
+        <div class="pres-grid">
+            <div class="pres-plant-card" style="border-color:#22c55e">
+                <h3 style="color:#22c55e">📈 Top Improvements</h3>
+                ${improved.map(i => `
+                <div class="pres-item">
+                    <span class="name">${i.name}</span>
+                    <span class="time" style="color:#22c55e">↓ ${Math.abs(i.pct)}%</span>
+                </div>`).join('')}
+            </div>
+            <div class="pres-plant-card" style="border-color:#ef4444">
+                <h3 style="color:#ef4444">📉 Worsening Performance</h3>
+                ${worsened.map(w => `
+                <div class="pres-item">
+                    <span class="name">${w.name}</span>
+                    <span class="time" style="color:#ef4444">↑ ${w.pct}%</span>
+                </div>`).join('')}
+            </div>
+        </div>
+    </div>`;
+
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2 style="color:#ef4444">Slide 4: Special Attention (Rising Risk)</h2>
+            <p>Priority molds with rapidly increasing failure rates</p>
+        </div>
+        <div class="pres-kpi-grid">
+            ${risingRisk.map(r => `
+            <div class="pres-kpi-card" style="border-top:5px solid #ef4444">
+                <div class="lbl">${r.name}</div>
+                <div class="val" style="color:#ef4444">+${r.pct}%</div>
+                <div class="sub">Risk Level: High</div>
+            </div>`).join('')}
+        </div>
+        <div style="margin-top:2rem;background:#450a0a;padding:2rem;border-radius:20px;border:1px solid #ef4444">
+            <h4 style="color:#fecaca;margin-bottom:1rem">Recommended Action:</h4>
+            <p style="color:#fecaca;font-size:1.2rem">Perform deep-dive root cause analysis and schedule preventive maintenance for the molds above immediately to prevent catastrophic failure.</p>
+        </div>
+    </div>`;
+
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 5: Top 5 Mold Failure Reasons</h2>
+            <p>Categorized root causes for mold downtime this period</p>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:1.5rem;justify-content:center">
+            ${top5Reasons.map((r, i) => {
+                const pct = top5Reasons[0][1] > 0 ? (r[1] / top5Reasons[0][1] * 100).toFixed(0) : '0';
+                return `
+                <div style="background:#1e293b;padding:1.5rem;border-radius:20px;border-left:8px solid #fbbf24">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.8rem">
+                        <span style="font-size:1.5rem;font-weight:700">${i+1}. ${r[0]}</span>
+                        <span style="font-size:1.5rem;color:#fbbf24">${(r[1]/60).toFixed(1)} Hrs</span>
+                    </div>
+                    <div style="height:15px;background:#0f172a;border-radius:8px">
+                        <div style="width:${pct}%;height:100%;background:#fbbf24;border-radius:8px"></div>
+                    </div>
+                </div>`;
+            }).join('')}
+        </div>
+    </div>`;
+
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 6: Interactive Action Plan</h2>
+            <p>Defining ownership and timelines for mold resolution</p>
+        </div>
+        <div class="pres-grid" style="grid-template-columns: 1fr 1fr">
+            <div class="pres-plant-card">
+                <h3>🛠️ Corrective Actions</h3>
+                <ul style="color:#cbd5e1;font-size:1.3rem;line-height:2">
+                    <li>Immediate mold spare parts inventory review</li>
+                    <li>Operator training for mold handling best practices</li>
+                    <li>Mold maintenance schedule overhaul (${risingRisk[0]?.name || 'Critical Mold'})</li>
+                </ul>
+            </div>
+            <div class="pres-plant-card">
+                <h3>📅 Timeline & Ownership</h3>
+                <div class="pres-item"><span class="name">Critical Mold Repairs</span><span class="time" style="color:#fbbf24">Week 1</span></div>
+                <div class="pres-item"><span class="name">Mold Maintenance Training</span><span class="time" style="color:#fbbf24">Week 2</span></div>
+                <div class="pres-item"><span class="name">Audit & Review</span><span class="time" style="color:#fbbf24">Week 4</span></div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:4rem;font-size:2rem;color:#fbbf24;font-weight:800">
+            Target: 20% Mold-Related Downtime Reduction for Next Month
+        </div>
+    </div>`;
+
+    el.innerHTML = html;
+    totalPresSlides = el.querySelectorAll('.pres-slide').length;
+}
+
+function renderPresSummary() {
+    const el = document.getElementById('presSummary');
+    if (!el) return;
+
+    if (!pd || !pd.plants || pd.plants.length === 0) {
+        el.innerHTML = '<div class="pres-slide active" style="justify-content:center;align-items:center"><h1>No Data Loaded</h1><p>Please load data before entering presentation mode.</p></div>';
+        return;
+    }
+    
+    // 0. Date Context
+    let monthLabel = "Overall Performance";
+    let curMonthStart = null, prevMonthStart = null;
+    if (gf.fd) {
+        const d = new Date(gf.fd);
+        monthLabel = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        curMonthStart = gf.fd;
+        const prevMonthDate = new Date(d); prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
+        prevMonthStart = prevMonthDate.toISOString().slice(0, 10);
+    }
+
+    // 1. Data Processing for Slides
+    // Slide 1: Plant Breakdown
+    const plantTotal = pd.plants.reduce((sum, p) => sum + p.downtime, 0);
+    
+    // Slide 2: Top 10 Machine Events
+    const machineEvents = [];
+    rawRows.forEach(r => {
+        if (!r) return;
+        const dt = parseFloat(get(r, 'Down Time (Min)')) || 0;
+        if (dt <= 0) return;
+        const rc = (get(r, 'ReasonCode') || '').toString().trim();
+        if (getCatGroup(rc) !== 'Maintenance related') return;
+        
+        machineEvents.push({
+            machine: get(r, 'No'),
+            reason: get(r, 'ReasonDescription') || get(r, 'ReasonCode'),
+            hours: (dt / 60).toFixed(1),
+            dt: dt
+        });
+    });
+    const top10Events = machineEvents.sort((a, b) => b.dt - a.dt).slice(0, 10);
+
+    // Slide 3 & 4: Trends & Rising Risk
+    const machTrend = {};
+    rawRows.forEach(r => {
+        const ds = getDateStr(r); if (!ds) return;
+        const m = (get(r, 'No') || '').trim(); if (!m || m === 'Total') return;
+        const dt = parseFloat(get(r, 'Down Time (Min)')) || 0;
+        if (!machTrend[m]) machTrend[m] = { cur: 0, prev: 0 };
+        
+        if (curMonthStart && ds.startsWith(curMonthStart.slice(0, 7))) machTrend[m].cur += dt;
+        else if (prevMonthStart && ds.startsWith(prevMonthStart.slice(0, 7))) machTrend[m].prev += dt;
+    });
+
+    const trendList = Object.entries(machTrend).map(([name, data]) => {
+        const diff = data.cur - data.prev;
+        const pct = data.prev > 0 ? (diff / data.prev * 100).toFixed(0) : (data.cur > 0 ? 100 : 0);
+        return { name, ...data, diff, pct: parseInt(pct) };
+    }).filter(x => x.cur > 0 || x.prev > 0);
+
+    const improved = trendList.filter(x => x.diff < 0).sort((a, b) => a.diff - b.diff).slice(0, 5);
+    const worsened = trendList.filter(x => x.diff > 0).sort((a, b) => b.diff - a.diff).slice(0, 5);
+    const risingRisk = trendList.sort((a, b) => b.pct - a.pct).slice(0, 5);
+
+    // Slide 5: Top 5 Reasons
+    const reasonMap = {};
+    rawRows.forEach(r => {
+        const rc = (get(r, 'ReasonCode') || '').toString().trim();
+        if (getCatGroup(rc) !== 'Maintenance related') return;
+        const desc = get(r, 'ReasonDescription') || rc;
+        const dt = parseFloat(get(r, 'Down Time (Min)')) || 0;
+        if (!reasonMap[desc]) reasonMap[desc] = 0;
+        reasonMap[desc] += dt;
+    });
+    const top5Reasons = Object.entries(reasonMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+    // Build HTML Slides
+    let html = '';
+
+    // SLIDE 0: Title
+    html += `
+    <div class="pres-slide pres-title-slide">
+        <h1>Monthly Machine Performance</h1>
+        <p>${monthLabel}</p>
+        <div style="margin-top:4rem;color:#64748b;font-size:1.2rem">Interactive Maintenance Review</div>
+    </div>`;
+
+    // SLIDE 1: Machine Breakdown (Plant %)
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 1: Plant Machine Breakdown %</h2>
+            <p>Downtime distribution across manufacturing sites for ${monthLabel}</p>
+        </div>
+        <div class="pres-grid">
+            ${pd.plants.map(p => {
+                const pct = ((p.downtime / plantTotal) * 100).toFixed(1);
+                return `
+                <div class="pres-plant-card">
+                    <h3>${p.name}</h3>
+                    <div class="pres-kpi-card" style="background:#0f172a;padding:1.5rem">
+                        <div class="val" style="font-size:4rem">${pct}%</div>
+                        <div class="sub">${(p.downtime/60).toFixed(0)} Hours</div>
+                    </div>
+                </div>`;
+            }).join('')}
+        </div>
+    </div>`;
+
+    // SLIDE 2: Top 10 Events
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 2: Top 10 Machine Breakdown Events</h2>
+            <p>Critical incidents requiring immediate review</p>
+        </div>
+        <div style="background:#1e293b;border-radius:24px;padding:1.5rem">
+            <table style="width:100%;border-collapse:collapse;font-size:1.2rem">
+                <thead>
+                    <tr style="text-align:left;color:#94a3b8;border-bottom:2px solid #334155">
+                        <th style="padding:1rem">Machine</th>
+                        <th style="padding:1rem">Primary Reason</th>
+                        <th style="padding:1rem;text-align:right">Downtime (Hrs)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${top10Events.map(e => `
+                    <tr style="border-bottom:1px solid #334155">
+                        <td style="padding:1rem;color:#e07b1c;font-weight:700">${e.machine}</td>
+                        <td style="padding:1rem;color:#cbd5e1">${e.reason}</td>
+                        <td style="padding:1rem;text-align:right;color:#f87171;font-weight:800">${e.hours}h</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+    </div>`;
+
+    // SLIDE 3: Machine Trends
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 3: Monthly Machine Trends</h2>
+            <p>Comparing current performance vs previous month</p>
+        </div>
+        <div class="pres-grid">
+            <div class="pres-plant-card" style="border-color:#22c55e">
+                <h3 style="color:#22c55e">📈 Top Improvements</h3>
+                ${improved.map(i => `
+                <div class="pres-item">
+                    <span class="name">${i.name}</span>
+                    <span class="time" style="color:#22c55e">↓ ${Math.abs(i.pct)}%</span>
+                </div>`).join('')}
+            </div>
+            <div class="pres-plant-card" style="border-color:#ef4444">
+                <h3 style="color:#ef4444">📉 Worsening Performance</h3>
+                ${worsened.map(w => `
+                <div class="pres-item">
+                    <span class="name">${w.name}</span>
+                    <span class="time" style="color:#ef4444">↑ ${w.pct}%</span>
+                </div>`).join('')}
+            </div>
+        </div>
+    </div>`;
+
+    // SLIDE 4: Special Attention Machines
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2 style="color:#ef4444">Slide 4: Special Attention (Rising Risk)</h2>
+            <p>Priority machines with rapidly increasing failure rates</p>
+        </div>
+        <div class="pres-kpi-grid">
+            ${risingRisk.map(r => `
+            <div class="pres-kpi-card" style="border-top:5px solid #ef4444">
+                <div class="lbl">${r.name}</div>
+                <div class="val" style="color:#ef4444">+${r.pct}%</div>
+                <div class="sub">Risk Level: High</div>
+            </div>`).join('')}
+        </div>
+        <div style="margin-top:2rem;background:#450a0a;padding:2rem;border-radius:20px;border:1px solid #ef4444">
+            <h4 style="color:#fecaca;margin-bottom:1rem">Recommended Action:</h4>
+            <p style="color:#fecaca;font-size:1.2rem">Perform deep-dive root cause analysis and schedule preventive maintenance for the machines above immediately to prevent catastrophic failure.</p>
+        </div>
+    </div>`;
+
+    // SLIDE 5: Top 5 Reasons
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 5: Top 5 Machine Failure Reasons</h2>
+            <p>Categorized root causes for the current month</p>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:1.5rem;justify-content:center">
+            ${top5Reasons.map((r, i) => {
+                const pct = (r[1] / top5Reasons[0][1] * 100).toFixed(0);
+                return `
+                <div style="background:#1e293b;padding:1.5rem;border-radius:20px;border-left:8px solid #e07b1c">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.8rem">
+                        <span style="font-size:1.5rem;font-weight:700">${i+1}. ${r[0]}</span>
+                        <span style="font-size:1.5rem;color:#e07b1c">${(r[1]/60).toFixed(1)} Hrs</span>
+                    </div>
+                    <div style="height:15px;background:#0f172a;border-radius:8px">
+                        <div style="width:${pct}%;height:100%;background:#e07b1c;border-radius:8px"></div>
+                    </div>
+                </div>`;
+            }).join('')}
+        </div>
+    </div>`;
+
+    // SLIDE 6: Action Plan
+    html += `
+    <div class="pres-slide">
+        <div class="pres-hdr">
+            <h2>Slide 6: Interactive Action Plan</h2>
+            <p>Defining ownership and timelines for resolution</p>
+        </div>
+        <div class="pres-grid" style="grid-template-columns: 1fr 1fr">
+            <div class="pres-plant-card">
+                <h3>🛠️ Corrective Actions</h3>
+                <ul style="color:#cbd5e1;font-size:1.3rem;line-height:2">
+                    <li>Immediate spare parts inventory review</li>
+                    <li>Shift-wise operator training for top 5 issues</li>
+                    <li>Hydraulic system overhaul (Machine ${risingRisk[0]?.name || 'PIMXXX'})</li>
+                </ul>
+            </div>
+            <div class="pres-plant-card">
+                <h3>📅 Timeline & Ownership</h3>
+                <div class="pres-item"><span class="name">Critical Repairs</span><span class="time" style="color:#e07b1c">Week 1</span></div>
+                <div class="pres-item"><span class="name">Staff Training</span><span class="time" style="color:#e07b1c">Week 2</span></div>
+                <div class="pres-item"><span class="name">Audit & Review</span><span class="time" style="color:#e07b1c">Week 4</span></div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:4rem;font-size:2rem;color:#e07b1c;font-weight:800">
+            Target: 15% Downtime Reduction for Next Month
+        </div>
+    </div>`;
+
+    el.innerHTML = html;
+    totalPresSlides = el.querySelectorAll('.pres-slide').length;
+}
+
+function showSlide(n) {
+    const slides = document.querySelectorAll('.pres-slide');
+    slides.forEach(s => s.classList.remove('active'));
+    if (slides[n]) slides[n].classList.add('active');
+}
+
+function changePresSlide(n) {
+    currentPresSlide += n;
+    if (currentPresSlide < 0) currentPresSlide = totalPresSlides - 1;
+    if (currentPresSlide >= totalPresSlides) currentPresSlide = 0;
+    showSlide(currentPresSlide);
+}
+
+// Arrow Key Support
+document.addEventListener('keydown', e => {
+    if (!document.body.classList.contains('pres-mode')) return;
+    if (e.key === 'ArrowRight' || e.key === ' ') changePresSlide(1);
+    if (e.key === 'ArrowLeft') changePresSlide(-1);
+    if (e.key === 'Escape') togglePresentationMode();
+});
+
 // State
 let currentUser=null, rawRows=[], charts={}, drillCharts={};
+let MOLD_MAPPING = {};
+
+function normKey(s) {
+    if (!s) return '';
+    return s.toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function getMappedMoldName(itemNo, itemDesc) {
+    const k1 = normKey(itemNo);
+    const k2 = normKey(itemDesc);
+    const mapped = MOLD_MAPPING[k1] || MOLD_MAPPING[k2];
+    if (mapped) return mapped;
+    return (itemDesc && itemDesc !== '—') ? itemDesc : (itemNo || '—');
+}
+
+async function loadMoldMapping() {
+    try {
+        const resp = await fetch('Mold names.csv');
+        if (!resp.ok) throw new Error('Failed to load Mold names.csv');
+        const text = await resp.text();
+        const lines = text.split('\n');
+        let currentMouldName = '';
+        
+        MOLD_MAPPING = {};
+        
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line || line.startsWith('.,,')) continue;
+            
+            const cols = line.split(',').map(c => c.trim());
+            if (cols.length < 3) continue;
+            
+            const mouldName = cols[1];
+            const itemNo = cols[2];
+            const description = cols[3];
+            
+            if (mouldName) {
+                currentMouldName = mouldName;
+            }
+            
+            if (currentMouldName) {
+                if (itemNo) MOLD_MAPPING[normKey(itemNo)] = currentMouldName;
+                if (description) MOLD_MAPPING[normKey(description)] = currentMouldName;
+            }
+        }
+        console.log('Mold mapping loaded:', Object.keys(MOLD_MAPPING).length, 'entries');
+    } catch (e) {
+        console.error('Error loading mold mapping:', e);
+    }
+}
 let gf={fd:'',td:'',ct:'all',pl:'all',rc:'all',wc:'all',sh:'all',sg:'all',ac:''};
 let _datePeriod='week';
 let pd={machines:[],reasons:[],wcs:[],shifts:[],segs:[],daily:[],totals:{}};
@@ -379,6 +1077,7 @@ async function loadData(){
     hideErr();
     document.getElementById('kpiCards').innerHTML='<div class="stat-card" style="grid-column:1/-1"><div class="loading-box"><div class="spinner"></div><p>Loading data...</p></div></div>';
     try{
+        await loadMoldMapping();
         rawRows = await fetch('/api/data').then(r=>{if(!r.ok)throw new Error('API error '+r.status);return r.json();});
 
         const _pm={};
@@ -498,11 +1197,6 @@ function setDateDefaults(){
 }
 
 // Access row field by name
-function get(row,key){
-    const v=row[key];
-    return v!==undefined&&v!==null?v:'';
-}
-
 // Process
 function processData(){
     const M={},R={},WC={},SH={},SG={},DY={},PL={},CAT={};
@@ -948,8 +1642,8 @@ function renderAnalysisModal(title,subtitle,rows,byMold){
         R[rk].downtime+=dt;R[rk].count++;
         if(!M[machine])M[machine]={name:machine,downtime:0,incidents:0,output:0,wc,plant};
         M[machine].downtime+=dt;M[machine].incidents++;M[machine].output+=out;
-        const moldName=itemDesc!=='—'?itemDesc:itemNo;
-        if(moldName!=='—'){
+        let moldName = getMappedMoldName(itemNo, itemDesc);
+        if(moldName && moldName!=='—'){
             if(!ML[moldName])ML[moldName]={name:moldName,itemNo,segment,downtime:0,incidents:0,output:0,machine,wc,plant};
             ML[moldName].downtime+=dt;ML[moldName].incidents++;ML[moldName].output+=out;
         }
@@ -1393,13 +2087,6 @@ function renderMaintPanel(el){
     const rows=getCatFilteredRows();
     // ── machine totals (filtered, 504 series) ─────────────────────────────────
     const atMachMap={};
-    function getDateStr(r){
-        const d=get(r,'PostingDate');
-        if(!d)return null;
-        if(d instanceof Date)return d.toISOString().slice(0,10);
-        if(typeof d==='string')return d.slice(0,10);
-        return null;
-    }
     for(const r of rows){
         const dt=parseFloat(get(r,'Down Time (Min)'))||0;
         if(dt<=0)continue;
@@ -2020,12 +2707,14 @@ function closeRCModal(){
 // ── Mold Breakdown ────────────────────────────────────────────────────────────
 function renderMoldPanel(el){
     const rows=getCatFilteredRows();
-    function getDateStr(r){const d=get(r,'PostingDate');if(!d)return null;if(d instanceof Date)return d.toISOString().slice(0,10);if(typeof d==='string')return d.slice(0,10);return null;}
     // ── mold totals ───────────────────────────────────────────────────────────
     const moldMap={};
     for(const r of rows){
         const dt=parseFloat(get(r,'Down Time (Min)'))||0;if(dt<=0)continue;
-        const name=(get(r,'Item Description')||get(r,'ItemNo')||'').trim();if(!name)continue;
+        const itemNo = get(r,'ItemNo');
+        const itemDesc = get(r,'Item Description');
+        const name = getMappedMoldName(itemNo, itemDesc);
+        if(!name || name==='—')continue;
         if(!moldMap[name])moldMap[name]={name,downtime:0,incidents:0,dates:[]};
         moldMap[name].downtime+=dt;moldMap[name].incidents++;
         const ds=getDateStr(r);if(ds)moldMap[name].dates.push(ds);
@@ -2038,7 +2727,9 @@ function renderMoldPanel(el){
         const midDate=sorted[Math.floor(sorted.length/2)];
         let before=0,after=0;
         for(const r of rows){
-            const name=(get(r,'Item Description')||get(r,'ItemNo')||'').trim();
+            const itemNo = get(r,'ItemNo');
+            const itemDesc = get(r,'Item Description');
+            const name = getMappedMoldName(itemNo, itemDesc);
             if(name!==mold.name)continue;
             const ds=getDateStr(r);if(!ds)continue;
             const dt=parseFloat(get(r,'Down Time (Min)'))||0;
@@ -2214,9 +2905,11 @@ function openMoldModal(moldName,allTime=false){
             const rc=(get(r,'ReasonCode')||'').toString().trim();
             if(getCatGroup(rc)!=='Mold related')return false;
             if(gf.pl!=='all'&&(get(r,'Search_Name')||'')!==gf.pl)return false;
-            return(get(r,'Item Description')||get(r,'ItemNo')||'').trim()===moldName;
+            return getMappedMoldName(get(r,'ItemNo'), get(r,'Item Description')) === moldName;
         })
-        :getCatFilteredRows().filter(r=>(get(r,'Item Description')||get(r,'ItemNo')||'').trim()===moldName);
+        :getCatFilteredRows().filter(r=>{
+            return getMappedMoldName(get(r,'ItemNo'), get(r,'Item Description')) === moldName;
+        });
     const totalDT=rows.reduce((s,r)=>s+(parseFloat(get(r,'Down Time (Min)'))||0),0);
     const rcMap={};
     for(const r of rows){
@@ -2415,7 +3108,6 @@ function closeMoldModal(){
 function renderUtilPanel(el){
     const rows=getCatFilteredRows();
     // ── machine totals ────────────────────────────────────────────────────────
-    function getDateStr(r){const d=get(r,'PostingDate');if(!d)return null;if(d instanceof Date)return d.toISOString().slice(0,10);if(typeof d==='string')return d.slice(0,10);return null;}
     const atMachMap={};
     for(const r of rows){
         const dt=parseFloat(get(r,'Down Time (Min)'))||0;if(dt<=0)continue;
@@ -2844,7 +3536,6 @@ function closeUtilMachModal(){
 // ── Power Failure ─────────────────────────────────────────────────────────────
 function renderPowerPanel(el){
     const rows=getCatFilteredRows();
-    function getDateStr(r){const d=get(r,'PostingDate');if(!d)return null;if(d instanceof Date)return d.toISOString().slice(0,10);if(typeof d==='string')return d.slice(0,10);return null;}
     const atMachMap={};
     for(const r of rows){
         const dt=parseFloat(get(r,'Down Time (Min)'))||0;if(dt<=0)continue;

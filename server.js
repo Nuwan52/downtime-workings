@@ -101,9 +101,14 @@ function readCSVData() {
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "dashboard.html"));
+// Serve static files (including Mold names.csv, CSS, etc.)
+app.use(express.static(__dirname));
+
+app.get('/', (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
+
 
 app.get("/api/data", async (req, res) => {
     if (USE_CSV) {
