@@ -10,7 +10,7 @@ app.use(cors());
 // ── Dev mode ─────────────────────────────────────────────────────────────────
 // Set USE_CSV = true  → reads dbo_ProdData_FULL.csv (no SQL needed)
 // Set USE_CSV = false → connects to the SQL database
-const USE_CSV = true;
+const USE_CSV = false;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Database config
